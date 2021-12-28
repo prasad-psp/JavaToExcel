@@ -31,21 +31,11 @@ public class ExportToExcel {
     private BufferedOutputStream excelBOU = null;
     private XSSFWorkbook excelJTableExporter = null;
     
-    private final ArrayList<String> headingList = new ArrayList<>();
     
     private final short START_ROW = 3;
     private final short START_COLUMN = 1;
     
-        
-    
-    
-    
-    public void addHeading(String heading) {
-        
-        if(heading != null && !heading.isEmpty()) {
-            headingList.add(heading);
-        }
-    }
+   
     
     private CellStyle setHeadingStyle(XSSFWorkbook excelJTableExporter) {
         try {
@@ -72,26 +62,30 @@ public class ExportToExcel {
         }
     }    
     
-    private void createHeading(XSSFSheet excelSheet,XSSFWorkbook excelJTableExporter) {
+    private void createHeading(XSSFSheet excelSheet,XSSFWorkbook excelJTableExporter,JTable table) {
         
         try {
             // Row
             XSSFRow hexcelRow = excelSheet.createRow(START_ROW);
             
-            int headingSize = headingList.size();
-
-            // Columns
-            for(int k = 0; k < headingSize; k++) {
+            int columnCount = table.getColumnCount();
+            
+            // column
+            for(int i = 0; i < columnCount; i++) {
+                String columnName = table.getColumnName(i);
                 
-                try {
-                    XSSFCell hexcelCell = hexcelRow.createCell(k + START_COLUMN);
-                    hexcelCell.setCellValue(headingList.get(k));
-                    hexcelCell.setCellStyle(setHeadingStyle(excelJTableExporter));
+                if(!columnName.isEmpty()) {
+                    
+                    try {
+                        XSSFCell excelCell = hexcelRow.createCell(i + START_COLUMN);
+                        excelCell.setCellValue(columnName);
+                        excelCell.setCellStyle(setHeadingStyle(excelJTableExporter));
+                    }
+                    catch(Exception e) {
+                        JOptionPane.showMessageDialog(null,"Create heading ERROR "+e.getMessage());
+                    }
                 }
-                catch(Exception e) {
-                    JOptionPane.showMessageDialog(null,"Create heading ERROR "+e.getMessage());
-                }
-            }
+            } 
         }
         catch(Exception e) {
             JOptionPane.showMessageDialog(null,"Create heading ERROR "+e.getMessage());
@@ -111,7 +105,7 @@ public class ExportToExcel {
                 // For column
                 for(int j = 0; j < columnCount; j++) {
                     
-                    XSSFCell excelCell = excelRow.createCell(j);
+                    XSSFCell excelCell = excelRow.createCell(j+START_COLUMN);
                     excelCell.setCellValue(table.getValueAt(i, j).toString());
                 }
             }
@@ -122,7 +116,7 @@ public class ExportToExcel {
     }
     
     
-    public void export(Component parent) {
+    public void export(Component parent,JTable table) {
                 
         // Open file chooser
         JFileChooser excelFileChooser = new JFileChooser();
@@ -141,10 +135,10 @@ public class ExportToExcel {
                 XSSFSheet excelSheet = excelJTableExporter.createSheet("Java to excel");
 
                 // For heading
-                createHeading(excelSheet,excelJTableExporter);
+                createHeading(excelSheet,excelJTableExporter,table);
                 
                 // For data
-//                createExcelUsingTable(excelSheet,JTable);
+                createExcelUsingTable(excelSheet,table);
                 
                 // For write data into excel
                 excelFOU = new FileOutputStream(excelFileChooser.getSelectedFile() + ".xlsx");
