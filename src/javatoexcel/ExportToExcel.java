@@ -30,7 +30,7 @@ public class ExportToExcel {
     private BufferedOutputStream excelBOU = null;
     private XSSFWorkbook excelJTableExporter = null;
     
-    private ArrayList<String> headingList = new ArrayList<>();
+    private final ArrayList<String> headingList = new ArrayList<>();
     
     private final short START_ROW = 3;
     private final short START_COLUMN = 1;
