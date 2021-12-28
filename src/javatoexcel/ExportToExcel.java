@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -97,6 +98,29 @@ public class ExportToExcel {
         }
     }
     
+    private void createExcelUsingTable(XSSFSheet excelSheet,JTable table) {
+        try {
+            int rowCount = table.getRowCount();
+            int columnCount = table.getColumnCount();
+            
+            for(int i = 0; i < rowCount; i++) {
+                
+                // For row
+                XSSFRow excelRow = excelSheet.createRow(i+START_ROW+1);
+
+                // For column
+                for(int j = 0; j < columnCount; j++) {
+                    
+                    XSSFCell excelCell = excelRow.createCell(j);
+                    excelCell.setCellValue(table.getValueAt(i, j).toString());
+                }
+            }
+        }
+        catch(Exception e) {
+            JOptionPane.showMessageDialog(null,"Create excel using table ERROR "+e.getMessage());
+        }
+    }
+    
     
     public void export(Component parent) {
                 
@@ -118,24 +142,9 @@ public class ExportToExcel {
 
                 // For heading
                 createHeading(excelSheet,excelJTableExporter);
-                    
-                    
-//                    
-//                    // For data
-//
-//                for(int i=0;i<viewTable.getRowCount();i++)
-//                {
-//                    XSSFRow excelRow = excelSheet.createRow(i+11);
-//
-//                    for(int j=0;j<viewTable.getColumnCount();j++)
-//                    {
-//                        //XSSFCell hexcelCell = excelRow.createCell(j);
-//                        XSSFCell excelCell = excelRow.createCell(j);
-//
-//                        //excelCell.setCellValue(viewTable.getColumnName(j).toString());
-//                        excelCell.setCellValue(viewTable.getValueAt(i, j).toString());
-//                    }
-//                }
+                
+                // For data
+//                createExcelUsingTable(excelSheet,JTable);
                 
                 // For write data into excel
                 excelFOU = new FileOutputStream(excelFileChooser.getSelectedFile() + ".xlsx");
